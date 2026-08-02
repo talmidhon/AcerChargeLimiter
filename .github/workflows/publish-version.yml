@@ -1,0 +1,60 @@
+name: Update version.json on Release Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout main branch
+      uses: actions/checkout@v4
+      with:
+        ref: main
+        fetch-depth: 0
+
+    - name: Update version.json safely
+      run: |
+        TAG_NAME="${{ github.event.release.tag_name }}"
+        if [ -z "$TAG_NAME" ]; then
+          TAG_NAME=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+        fi
+
+        VERSION="${TAG_NAME#v}"
+        REPO="${{ github.repository }}"
+        PROJECT_NAME="${REPO#*/}"
+        DOWNLOAD_URL="https://github.com/$REPO/releases/download/$TAG_NAME/${PROJECT_NAME}_Setup.exe"
+
+        echo "Processing release tag: $TAG_NAME (Version: $VERSION)"
+
+        if [ -f version.json ]; then
+          jq --arg ver "$VERSION" --arg url "$DOWNLOAD_URL" \
+             '.latest_version = $ver | .download_url = $url' version.json > temp.json && mv temp.json version.json
+        else
+          jq -n \
+            --arg ver "$VERSION" \
+            --arg url "$DOWNLOAD_URL" \
+            '{
+              latest_version: $ver,
+              download_url: $url,
+              messages: {
+                en: "",
+                he: ""
+              },
+              rules: []
+            }' > version.json
+        fi
+
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add version.json
+        
+        if ! git diff --staged --quiet; then
+          git commit -m "Update version.json for release $TAG_NAME [skip ci]"
+          git push origin HEAD:refs/heads/main
+        fi

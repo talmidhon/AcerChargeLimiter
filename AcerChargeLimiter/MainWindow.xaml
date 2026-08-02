@@ -1,0 +1,181 @@
+<Window
+    x:Class="AcerChargeLimiter.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Acer Battery Optimizer">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+		<Grid x:Name="RootGrid" Padding="24" RowSpacing="16">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+
+			<StackPanel Grid.Row="0" Spacing="4">
+				<TextBlock x:Name="TitleTextBlock" Style="{StaticResource TitleTextBlockStyle}"/>
+				<TextBlock x:Name="SubtitleTextBlock"
+                           Style="{StaticResource BodyTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+			</StackPanel>
+
+			<StackPanel Grid.Row="1" Spacing="8">
+				<InfoBar x:Name="UpdateInfoBar"
+                         IsOpen="False"
+                         IsClosable="True"
+                         Severity="Informational">
+					<InfoBar.ActionButton>
+						<Button x:Name="UpdateActionButton" Click="OnUpdateNowClicked"/>
+					</InfoBar.ActionButton>
+				</InfoBar>
+
+				<InfoBar x:Name="SupportInfoBar"
+                         IsOpen="False"
+                         IsClosable="True"
+                         CloseButtonClick="OnSupportInfoBarClosed">
+					<InfoBar.ActionButton>
+						<DropDownButton x:Name="ReportDropDownButton" Visibility="Collapsed">
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE9D9;" FontSize="14"/>
+								<TextBlock x:Name="ReportButtonTextBlock"/>
+							</StackPanel>
+							<DropDownButton.Flyout>
+								<MenuFlyout>
+									<MenuFlyoutItem x:Name="ReportMenuItem" Click="OnReportCompatibilityClicked">
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE8A7;"/>
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem x:Name="DontShowAgainMenuItem" Click="OnDontShowAgainClicked">
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE711;"/>
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+								</MenuFlyout>
+							</DropDownButton.Flyout>
+						</DropDownButton>
+					</InfoBar.ActionButton>
+				</InfoBar>
+			</StackPanel>
+
+			<Border Grid.Row="2"
+                    Background="{ThemeResource LayerOnAcrylicFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20"
+                    VerticalAlignment="Top">
+
+				<StackPanel Spacing="20">
+					<Grid ColumnSpacing="16">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+
+						<StackPanel Grid.Column="0" VerticalAlignment="Center">
+							<TextBlock x:Name="ToggleTitleTextBlock" Style="{StaticResource SubtitleTextBlockStyle}"/>
+							<TextBlock x:Name="ToggleDescTextBlock"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap"/>
+						</StackPanel>
+
+						<ToggleSwitch x:Name="BatteryLimitToggle"
+                                      Grid.Column="1"
+                                      IsEnabled="False"
+                                      Toggled="OnBatteryLimitToggled"/>
+					</Grid>
+
+					<MenuFlyoutSeparator />
+
+					<Grid ColumnSpacing="16">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+
+						<StackPanel Grid.Column="0" VerticalAlignment="Center">
+							<TextBlock x:Name="AutoStartTitleTextBlock" Style="{StaticResource SubtitleTextBlockStyle}"/>
+							<TextBlock x:Name="AutoStartDescTextBlock"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap"/>
+						</StackPanel>
+
+						<ToggleSwitch x:Name="AutoStartToggle"
+                                      Grid.Column="1"
+                                      Toggled="OnAutoStartToggled"/>
+					</Grid>
+
+					<Border x:Name="StatusCard"
+                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="12,10">
+						<StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+							<FontIcon x:Name="StatusIcon" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE862;" FontSize="16"/>
+							<TextBlock x:Name="StatusTextBlock"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}"
+                                       VerticalAlignment="Center"/>
+						</StackPanel>
+					</Border>
+				</StackPanel>
+			</Border>
+
+			<StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="8"
+                        Margin="0,12,0,0">
+
+				<TextBlock x:Name="AppVersionTextBlock"
+                           Style="{StaticResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           VerticalAlignment="Center"/>
+
+				<TextBlock Text="&#x2022;"
+                           Style="{StaticResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorDisabledBrush}"
+                           VerticalAlignment="Center"/>
+
+				<TextBlock x:Name="DevelopedByTextBlock"
+                           Style="{StaticResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           VerticalAlignment="Center"/>
+
+				<Button x:Name="GithubButton"
+                        Click="OnGithubClicked"
+                        Padding="2"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        CornerRadius="4"
+                        VerticalAlignment="Center">
+					<Viewbox Width="14" Height="14" FlowDirection="LeftToRight">
+						<Path Data="M10.226 17.284c-2.965-.36-5.054-2.493-5.054-5.256 0-1.123.404-2.336 1.078-3.144-.292-.741-.247-2.314.09-2.965.898-.112 2.111.36 2.83 1.01.853-.269 1.752-.404 2.853-.404 1.1 0 1.999.135 2.807.382.696-.629 1.932-1.1 2.83-.988.315.606.36 2.179.067 2.942.72.854 1.101 2 1.101 3.167 0 2.763-2.089 4.852-5.098 5.234.763.494 1.28 1.572 1.28 2.807v2.336c0 .674.561 1.056 1.235.786 4.066-1.55 7.255-5.615 7.255-10.646C23.5 6.188 18.334 1 11.978 1 5.62 1 .5 6.188.5 12.545c0 4.986 3.167 9.12 7.435 10.669.606.225 1.19-.18 1.19-.786V20.63a2.9 2.9 0 0 1-1.078.224c-1.483 0-2.359-.808-2.987-2.313-.247-.607-.517-.966-1.034-1.033-.27-.023-.359-.135-.359-.27 0-.27.45-.471.898-.471.652 0 1.213.404 1.797 1.235.45.651.921.943 1.483.943.561 0 .92-.202 1.437-.719.382-.381.674-.718.944-.943"
+                              Fill="{ThemeResource TextFillColorSecondaryBrush}"/>
+					</Viewbox>
+				</Button>
+
+				<Button x:Name="MitmachimButton"
+                        Click="OnMitmachimClicked"
+                        Padding="2"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        CornerRadius="4"
+                        VerticalAlignment="Center">
+					<Viewbox Width="14" Height="14" FlowDirection="LeftToRight">
+						<Path Data="m 35.840001,74.014005 c -0.264,-0.09651 -0.768,-0.421126 -1.12,-0.721375 -0.405745,-0.346093 -1.928404,-0.734178 -4.16,-1.060274 C 15.180958,69.985071 3.2653147,58.303192 0.79087173,43.047247 -1.6905069,27.74854 6.0988758,12.628101 20.061707,5.6394704 23.452791,3.9421762 29.703855,2.2399999 32.545906,2.2399999 c 0.79881,0 1.449792,-0.2811274 2.222985,-0.9599999 2.122838,-1.86387671 4.91111,-0.79260715 4.91111,1.8868759 0,2.724259 -2.592552,3.9557594 -4.835947,2.297146 C 33.95206,4.8045422 33.611096,4.7432673 31.841989,4.9245177 28.865821,5.229435 25.12679,6.2947472 22.16,7.6830774 20.708,8.3625511 19.52,9.0112867 19.52,9.124712 c 0,0.1134253 0.911516,0.1086128 2.025591,-0.010695 1.856442,-0.1988081 2.102331,-0.1509125 2.944581,0.5735608 0.701875,0.6037277 0.911567,1.0524267 0.887564,1.8992147 -0.03794,1.338286 -1.012073,3.330035 -2.146594,4.388987 C 22.774014,16.402459 22.4,16.853664 22.4,16.978458 c 0,0.489384 1.395881,0.552267 2.625893,0.118293 2.035239,-0.718074 4.355481,-0.58281 6.257023,0.364768 3.96029,1.973496 5.419242,6.219771 2.632199,7.661007 -0.462158,0.238991 -2.041639,0.741261 -3.509956,1.116156 -3.685532,0.941 -4.846164,1.613781 -6.470346,3.75065 -1.702429,2.239817 -2.43188,2.639848 -4.824856,2.64595 -2.609999,0.0067 -2.646148,0.432759 -0.321738,3.792461 1.054892,1.524741 2.15509,3.233105 2.444883,3.796365 1.423755,2.767289 -0.121594,4.895891 -3.55438,4.895891 -2.288429,0 -4.425061,-1.208068 -7.080117,-4.003151 C 8.3546042,38.754499 7.4702238,37.382752 6.7449032,35.139438 6.4307567,34.167827 6.1103227,33.862303 4.9344647,33.413239 4.1486615,33.113138 3.4240893,32.949243 3.3243043,33.049028 2.9028061,33.470526 2.819117,38.621872 3.1893059,41.358633 4.0313107,47.583471 6.4687175,53.18261 10.510719,58.17717 l 1.114519,1.377172 0.721645,-1.497323 c 0.801448,-1.662907 2.500053,-3.534426 4.407774,-4.856478 0.986291,-0.6835 1.548338,-1.500565 2.618926,-3.807211 1.412547,-3.043419 2.00043,-3.633331 3.620828,-3.633331 1.141267,0 2.257109,0.882111 4.20713,3.325879 2.235,2.800903 3.740055,3.724436 6.657182,4.084983 2.672914,0.330363 3.901278,0.908869 3.901278,1.837332 0,1.217432 -0.686971,1.356714 -4.041015,0.819306 -3.980507,-0.637784 -5.133638,-1.301726 -8.297813,-4.777659 -1.358292,-1.492121 -2.581491,-2.643809 -2.718219,-2.559306 -0.136729,0.0845 -0.623096,1.133692 -1.080816,2.331532 -0.840661,2.199985 -1.876253,3.445916 -4.437994,5.339396 C 15.828452,57.163505 14.4,59.360736 14.4,60.444004 c 0,1.278561 0.937416,2.556832 2.803163,3.822423 4.108268,2.786759 8.586395,4.568742 13.460438,5.356319 l 2.983601,0.482108 1.107534,-0.972428 c 1.381762,-1.213203 2.616406,-1.258313 3.940713,-0.143982 0.819762,0.689784 0.984552,1.059944 0.984552,2.211554 0,1.15161 -0.16479,1.521769 -0.984552,2.211554 -0.943684,0.794057 -1.823506,0.979685 -2.855448,0.602453 z M 19.059837,42.207902 c 0.119684,-0.193653 -0.735789,-1.748091 -1.901051,-3.454305 -2.749668,-4.026153 -3.312819,-5.416043 -2.747469,-6.780918 0.52181,-1.259761 1.939192,-1.89268 4.238536,-1.89268 1.84406,0 2.20635,-0.255273 4.165653,-2.935164 1.062169,-1.45281 3.320275,-2.575043 7.024495,-3.491029 3.202284,-0.791867 3.433994,-1.156732 1.76,-2.771406 -1.8013,-1.737469 -3.452272,-2.059588 -6,-1.170651 -2.462583,0.859229 -4.985775,0.0774 -5.756691,-1.783759 -0.515028,-1.243387 -0.180959,-2.128268 1.477759,-3.914281 0.769412,-0.82846 1.398597,-1.69246 1.398189,-1.92 -5.63e-4,-0.313947 -0.871489,-0.413084 -3.611683,-0.411114 l -3.610941,0.0026 -1.493846,1.224094 C 9.8337924,16.325464 4.9007778,24.331007 4.0049844,29.134224 l -0.2115314,1.134224 1.7199454,0.542165 c 2.0495812,0.646074 3.2632742,1.826351 3.7433605,3.640298 0.6536195,2.469621 3.7955201,6.082945 6.5832411,7.571019 1.112951,0.594089 2.903684,0.697518 3.219837,0.185972 z m 8.151422,25.013133 c -0.428413,-0.800499 -0.42331,-0.843271 0.171599,-1.43818 0.392982,-0.392983 1.233524,-0.502857 3.84686,-0.502857 3.245713,0 3.354591,0.02324 3.70419,0.790523 0.667763,1.465581 -0.0058,1.769477 -3.921831,1.769477 -3.102745,0 -3.504581,-0.06544 -3.800818,-0.618963 z m 4.002716,-3.331248 c -0.435934,-0.318763 -0.532441,-0.652964 -0.372534,-1.290081 l 0.215813,-0.859869 3.751373,0.09008 c 3.706123,0.08899 3.752705,0.09951 3.861764,0.872152 0.06786,0.480736 -0.109831,0.943101 -0.461161,1.2 -0.792125,0.579216 -6.199316,0.569722 -6.995255,-0.01228 z m 26.171222,-3.236273 c -0.558142,-0.242788 -1.175209,-0.741151 -1.371259,-1.107474 -0.320079,-0.598074 -0.64687,-0.666042 -3.202339,-0.666042 -3.874216,0 -3.851598,0.02918 -3.851598,-4.968806 V 49.9481 l -9.132005,-0.09405 c -7.698376,-0.07929 -9.179588,-0.169406 -9.4351,-0.574051 -0.435204,-0.689216 -0.383298,-1.163883 0.189962,-1.737142 0.435108,-0.435109 1.814718,-0.502858 10.24,-0.502858 11.994687,0 11.017143,-0.46849 11.017143,5.28 v 4 h 1.612818 c 1.465348,0 1.724153,-0.117038 2.830452,-1.28 1.070138,-1.124949 1.392842,-1.28 2.664028,-1.28 4.169609,0 5.115839,5.041809 1.31374,7.000012 -0.903336,0.465246 -1.622712,0.438607 -2.875842,-0.106496 z M 26.55978,59.999733 c -0.319778,-0.38531 -0.330992,-0.680593 -0.04932,-1.298791 0.364281,-0.799511 0.367544,-0.800036 4.412791,-0.710523 3.44649,0.07626 4.100654,0.17282 4.400859,0.649579 0.256826,0.407869 0.256826,0.712131 0,1.12 -0.505022,0.802032 -8.124685,1.010456 -8.764328,0.239735 z m 37.343299,-15.679734 -1.08773,-1.12 H 44.230532 c -16.468622,0 -18.642076,-0.05726 -19.087674,-0.502858 -0.276572,-2.76571 -0.502857,-0.698285 -0.502857,-0.937142 0,-0.238858 0.226285,-0.660572 0.502857,-0.937143 0.445688,-0.445689 2.63235,-0.502857 19.233946,-0.502857 h 18.731088 l 0.611059,-0.776835 c 0.336082,-0.427259 1.112806,-0.942427 1.726054,-1.144817 2.829802,-0.933918 5.41623,1.664363 4.599875,4.620956 -0.441037,1.597307 -1.635842,2.420696 -3.512629,2.420696 -1.341127,0 -1.682795,-0.145547 -2.629172,-1.12 z M 25.627772,35.891891 c -0.229053,-0.42799 -0.182986,-0.784753 0.165593,-1.282418 l 0.482926,-0.689474 h 18.541855 18.541855 l 0,-2.724511 c 0,-2.635481 -0.03202,-2.753119 -0.979758,-3.6 -1.829689,-1.634968 -1.516445,-4.756449 0.59047,-5.884036 0.430292,-0.230285 1.369719,-0.403299 2.087616,-0.384475 1.076568,0.02823 1.497252,0.243718 2.401,1.229877 0.998953,1.090047 1.080967,1.326661 0.928548,2.678917 -0.134662,1.194718 -0.388898,1.67492 -1.306897,2.468467 l -1.139711,0.985202 -0.09063,3.81528 -0.09063,3.815279 -19.907447,0.08242 c -19.099468,0.07907 -19.920327,0.05835 -20.224782,-0.510526 z m 5.103487,-6.430855 c -0.428413,-0.800498 -0.42331,-0.843271 0.171599,-1.43818 0.430247,-0.430247 1.654718,-0.502857 8.48,-0.502857 h 7.977143 v -7.299821 -7.299821 l -0.947187,-0.700285 c -0.535287,-0.395756 -1.105524,-1.228768 -1.311292,-1.915563 -1.080104,-3.6050642 3.40183,-6.2319272 6.073864,-3.5598938 0.831002,0.8310026 0.984615,1.2287315 0.984615,2.5493332 0,1.3615826 -0.145401,1.7101186 -1.12,2.6847176 l -1.12,1.12 v 8.106667 c 0,5.878518 -0.105544,8.21221 -0.384,8.490666 -0.280552,0.280552 -2.820609,0.384 -9.428741,0.384 -8.614765,0 -9.060489,-0.02942 -9.376001,-0.618963 z m 5.292322,-9.724224 c -0.451557,-0.330186 -0.507308,-1.144663 -0.431104,-6.298021 0.08735,-5.9068327 0.08901,-5.9190025 0.825137,-6.0233557 1.53752,-0.2179594 1.662759,0.2462624 1.657487,6.1437467 -0.0027,3.014449 -0.110695,5.635321 -0.24,5.824159 -0.398546,0.582038 -1.267151,0.751524 -1.81152,0.353471 z m -4.523972,-3.834563 c -0.08817,-0.229762 -0.119649,-2.209762 -0.06996,-4.399999 l 0.09035,-3.9822502 0.925278,-0.1056243 c 0.525546,-0.059993 1.041844,0.078251 1.1951,0.32 0.307995,0.4858405 0.380129,7.3113615 0.08538,8.0794515 -0.236732,0.616915 -1.996531,0.686813 -2.226155,0.08842 z m -3.591842,-1.773596 c -0.301789,-0.191473 -0.387523,-1.111796 -0.32,-3.4351 0.08831,-3.0383792 0.123651,-3.1780071 0.829847,-3.2781177 1.347338,-0.1909992 1.662387,0.4383629 1.662387,3.3208897 0,3.191614 -0.71895,4.31438 -2.172234,3.392328 z"
+                              Fill="{ThemeResource TextFillColorSecondaryBrush}"/>
+					</Viewbox>
+				</Button>
+			</StackPanel>
+		</Grid>
+	</ScrollViewer>
+</Window>

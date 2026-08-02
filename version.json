@@ -1,0 +1,19 @@
+{
+  "latest_version": "0.9.23",
+  "download_url": "https://github.com/talmidhon/AcerChargeLimiter/releases/download/v0.9.23/AcerChargeLimiter_Setup.exe",
+  "messages": {
+    "en": "Version {latest_version} is now available!",
+    "he": "גרסה {latest_version} זמינה כעת להורדה!"
+  },
+  "rules": [
+    {
+      "min_version": "0.0.0",
+      "max_version": "0.9.99",
+      "is_critical": false,
+      "messages": {
+        "en": "The version you are using is a beta release.\nVersion {latest_version} is available for download!",
+        "he": "התוכנה שברשותך היא גרסת בטא.\nגרסה יציבה {latest_version} זמינה כעת להורדה!"
+      }
+    }
+  ]
+}

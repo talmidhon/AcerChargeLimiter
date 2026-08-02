@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="AcerChargeLimiter/AcerChargeLimiter.vcxproj" Id="91c672e4-3e4d-4846-ad41-5d4fb9b72c24">
+    <Deploy />
+  </Project>
+</Solution>

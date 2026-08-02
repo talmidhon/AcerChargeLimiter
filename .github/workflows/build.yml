@@ -1,0 +1,116 @@
+name: Build and Draft Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set Dynamic Variables
+      id: vars
+      run: |
+        $tag = "${{ github.ref_name }}"
+        if ($tag -like "v*") {
+            $version = $tag.Substring(1)
+        } else {
+            $version = "0.0.0"
+        }
+
+        $slnFile = Get-ChildItem -Path . -Include *.sln, *.slnx -Recurse | Select-Object -First 1
+        if (-not $slnFile) {
+            Write-Error "No .sln or .slnx file found in repository!"
+            exit 1
+        }
+
+        echo "APP_VERSION=$version" >> $env:GITHUB_ENV
+        echo "PROJECT_NAME=${{ github.event.repository.name }}" >> $env:GITHUB_ENV
+        echo "SLN_PATH=$($slnFile.FullName)" >> $env:GITHUB_ENV
+      shell: powershell
+
+    - name: Install Inno Setup
+      run: choco install innosetup -y
+
+    - name: Add Inno Setup to PATH
+      run: echo "C:\Program Files (x86)\Inno Setup 6" >> $env:GITHUB_PATH
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Restore NuGet packages
+      run: nuget restore "$env:SLN_PATH"
+
+    - name: Build Application (Release x64)
+      run: msbuild "$env:SLN_PATH" /p:Configuration=Release /p:Platform=x64 /p:CL_MPcount=8 /p:Version=${{ env.APP_VERSION }} /m
+
+    - name: Prepare Output Directory for Inno Setup
+      run: |
+        $outDir = "x64\Release\$env:PROJECT_NAME"
+        if (-not (Test-Path $outDir)) {
+            New-Item -ItemType Directory -Force -Path $outDir
+            Copy-Item -Path "x64\Release\*" -Destination $outDir -Recurse -ErrorAction SilentlyContinue
+        }
+      shell: powershell
+
+    - name: Self-Sign Executable (Code Signing)
+      run: |
+        $exePath = "x64\Release\$env:PROJECT_NAME\$env:PROJECT_NAME.exe"
+        if (Test-Path $exePath) {
+            $cert = New-SelfSignedCertificate -CertStoreLocation cert:\CurrentUser\My -Subject "CN=$env:PROJECT_NAME" -Type CodeSigningCert
+            Set-AuthenticodeSignature -FilePath $exePath -Certificate $cert -TimestampServer "http://timestamp.digicert.com"
+        }
+      shell: powershell
+
+    - name: Build Installer Package
+      run: |
+        if (Test-Path "installer.iss") {
+            iscc /DAppVersion=${{ env.APP_VERSION }} installer.iss
+        }
+      shell: powershell
+
+    - name: Self-Sign Installer (Code Signing)
+      run: |
+        $setupPath = Get-ChildItem -Path "Output" -Filter "*_Setup.exe" | Select-Object -First 1
+        if ($setupPath) {
+            $cert = Get-ChildItem -Path cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
+            if ($cert) {
+                Set-AuthenticodeSignature -FilePath $setupPath.FullName -Certificate $cert -TimestampServer "http://timestamp.digicert.com"
+            }
+        }
+      shell: powershell
+
+    - name: Compress Debug Symbols (PDB)
+      run: |
+        $symbolsZip = "Output\${env:PROJECT_NAME}_${{ github.ref_name }}_Symbols.zip"
+        Compress-Archive -Path "x64\Release\*\*.pdb" -DestinationPath $symbolsZip -Force
+      shell: powershell
+
+    - name: Generate Build Attestation
+      if: ${{ !github.event.repository.private }}
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-path: Output/*_Setup.exe
+
+    - name: Create Draft GitHub Release (Installer & Symbols)
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: ${{ env.PROJECT_NAME }} ${{ github.ref_name }}
+        body: ""
+        draft: true
+        prerelease: false
+        files: |
+          Output/*.exe
+          Output/*.zip
