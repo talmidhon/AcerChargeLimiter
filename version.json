@@ -1,6 +1,6 @@
 {
-  "latest_version": "0.9.23",
-  "download_url": "https://github.com/talmidhon/AcerChargeLimiter/releases/download/v0.9.23/AcerChargeLimiter_Setup.exe",
+  "latest_version": "0.9.0",
+  "download_url": "https://github.com/talmidhon/AcerChargeLimiter/releases/download/v0.9.0/AcerChargeLimiter_Setup.exe",
   "messages": {
     "en": "Version {latest_version} is now available!",
     "he": "גרסה {latest_version} זמינה כעת להורדה!"
