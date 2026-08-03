@@ -52,7 +52,7 @@ The following Acer laptop series have been verified to support direct WMI charge
 ## 🛠️ Building from Source
 
 ### Prerequisites
-* **Visual Studio 2026** (with *Desktop development with C++* workload).
+* **Visual Studio 2022 (or newer)** (with *Desktop development with C++* workload).
 * **Windows 10/11 SDK** (Build 10.0.17763.0 or higher).
 * **Windows App SDK** (WinUI 3 C++ tooling).
 * *(Optional)* **Inno Setup 6** for packaging the setup installer.
@@ -60,9 +60,8 @@ The following Acer laptop series have been verified to support direct WMI charge
 ### Build Steps
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/talmidhon/AcerChargeLimiter.git](https://github.com/talmidhon/AcerChargeLimiter.git)
+   git clone https://github.com/talmidhon/AcerChargeLimiter.git
    cd AcerChargeLimiter
-
    ```
 
 2. Open `AcerChargeLimiter.slnx` in Visual Studio.
@@ -74,10 +73,10 @@ The following Acer laptop series have been verified to support direct WMI charge
 
 ## 📜 License
 
-This project is licensed under the **MIT License** - see the [LICENSE.txt](https://www.google.com/search?q=LICENSE.txt) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE.txt](LICENSE.txt) file for details.
 
 ---
 
 ## ❤️ Credits & Acknowledgments
 
-Developed and maintained with passion by **[talmidhon](https://www.google.com/search?q=https://github.com/talmidhon)**.
+Developed and maintained with passion by **[talmidhon](https://github.com/talmidhon)**.
